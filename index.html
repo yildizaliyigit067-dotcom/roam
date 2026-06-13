@@ -6,396 +6,468 @@
 <title>Roam — Gezdiğin Ülkeleri Haritala</title>
 <style>
   :root{
-    --bg:#060d1a;            /* deep midnight */
-    --bg2:#0b1830;           /* raised panel */
-    --ink:#f3f7ff;           /* near-white text */
-    --muted:#8fa6c4;         /* muted slate */
-    --aqua:#36d0e8;          /* vivid aqua */
-    --azure:#2b8cff;         /* electric azure */
-    --gold:#e8c074;          /* champagne gold */
-    --gold2:#f6dfa6;
-    --line:rgba(255,255,255,.10);
-    --glass:rgba(255,255,255,.045);
+    --bg:#060d1a;--bg2:#0b1830;--ink:#f3f7ff;--muted:#8fa6c4;
+    --aqua:#36d0e8;--azure:#2b8cff;--gold:#e8c074;--gold2:#f6dfa6;
+    --visited:#36d0e8;--wish:#e8c074;
+    --line:rgba(255,255,255,.10);--glass:rgba(255,255,255,.045);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-    background:var(--bg);color:var(--ink);
-    -webkit-font-smoothing:antialiased;overflow-x:hidden;
-  }
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
   ::selection{background:var(--aqua);color:#04101f}
 
-  /* NAV */
-  nav{
-    position:fixed;top:0;left:0;right:0;z-index:100;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:18px clamp(20px,5vw,64px);
-    backdrop-filter:saturate(160%) blur(16px);
-    background:rgba(6,13,26,.55);
-    border-bottom:1px solid transparent;transition:border-color .3s,background .3s;
-  }
-  nav.scrolled{border-bottom-color:var(--line);background:rgba(6,13,26,.8)}
-  .logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:21px;letter-spacing:-.02em}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px clamp(20px,5vw,64px);backdrop-filter:saturate(160%) blur(16px);background:rgba(6,13,26,.55);border-bottom:1px solid transparent;transition:.3s}
+  nav.scrolled{border-bottom-color:var(--line);background:rgba(6,13,26,.85)}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:21px;letter-spacing:-.02em;cursor:pointer}
   .logo .dot{width:14px;height:14px;border-radius:50%;background:conic-gradient(from 200deg,var(--aqua),var(--azure),var(--gold),var(--aqua));box-shadow:0 0 16px 1px rgba(54,208,232,.6)}
-  .nav-actions{display:flex;align-items:center;gap:14px}
+  .nav-actions{display:flex;align-items:center;gap:12px}
   .lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;font-size:13px;font-weight:600;background:var(--glass)}
-  .lang button{border:none;background:none;padding:7px 15px;cursor:pointer;color:var(--muted);font-family:inherit;transition:color .2s}
+  .lang button{border:none;background:none;padding:7px 14px;cursor:pointer;color:var(--muted);font-family:inherit;transition:.2s}
   .lang button.on{background:linear-gradient(120deg,var(--aqua),var(--azure));color:#04101f}
+  .nav-cta{border:none;cursor:pointer;font-family:inherit;font-weight:600;font-size:14px;padding:9px 18px;border-radius:999px;background:linear-gradient(120deg,var(--aqua),var(--azure));color:#04101f;transition:transform .2s}
+  .nav-cta:hover{transform:translateY(-2px)}
 
-  /* HERO SCROLL STAGE */
-  .stage{height:440vh;position:relative}
-  .sticky{position:sticky;top:0;height:100vh;overflow:hidden;
-    background:
-      radial-gradient(130% 100% at 50% 8%, #0e2548 0%, #081428 42%, var(--bg) 78%);
-    display:flex;align-items:center;justify-content:center}
-  /* starfield */
-  .sticky::before{content:"";position:absolute;inset:0;
-    background-image:
-      radial-gradient(1.4px 1.4px at 20% 30%, rgba(255,255,255,.7), transparent),
-      radial-gradient(1.2px 1.2px at 70% 20%, rgba(255,255,255,.5), transparent),
-      radial-gradient(1.6px 1.6px at 80% 65%, rgba(255,255,255,.6), transparent),
-      radial-gradient(1px 1px at 35% 75%, rgba(255,255,255,.5), transparent),
-      radial-gradient(1.3px 1.3px at 55% 45%, rgba(255,255,255,.4), transparent),
-      radial-gradient(1px 1px at 12% 60%, rgba(255,255,255,.45), transparent),
-      radial-gradient(1.2px 1.2px at 90% 40%, rgba(255,255,255,.5), transparent);
-    opacity:.7}
+  .stage{height:300vh;position:relative}
+  .sticky{position:sticky;top:0;height:100vh;overflow:hidden;background:radial-gradient(130% 100% at 50% 8%,#0e2548 0%,#081428 42%,var(--bg) 78%);display:flex;align-items:center;justify-content:center}
+  .sticky::before{content:"";position:absolute;inset:0;background-image:radial-gradient(1.4px 1.4px at 20% 30%,rgba(255,255,255,.7),transparent),radial-gradient(1.2px 1.2px at 70% 20%,rgba(255,255,255,.5),transparent),radial-gradient(1.6px 1.6px at 80% 65%,rgba(255,255,255,.6),transparent),radial-gradient(1px 1px at 35% 75%,rgba(255,255,255,.5),transparent),radial-gradient(1.3px 1.3px at 55% 45%,rgba(255,255,255,.4),transparent),radial-gradient(1px 1px at 12% 60%,rgba(255,255,255,.45),transparent),radial-gradient(1.2px 1.2px at 90% 40%,rgba(255,255,255,.5),transparent);opacity:.7}
   #globe{position:absolute;inset:0;width:100%;height:100%;z-index:2}
   .hero-copy{position:relative;z-index:5;text-align:center;pointer-events:none;padding:0 20px;transform:translateY(-3vh)}
-  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.34em;text-transform:uppercase;
-    background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:20px}
-  .hero-copy h1{font-size:clamp(42px,8.4vw,116px);line-height:.94;font-weight:600;letter-spacing:-.045em;
-    text-shadow:0 2px 60px rgba(43,140,255,.25)}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.34em;text-transform:uppercase;background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:20px}
+  .hero-copy h1{font-size:clamp(42px,8.4vw,116px);line-height:.94;font-weight:600;letter-spacing:-.045em;text-shadow:0 2px 60px rgba(43,140,255,.25)}
   .hero-copy h1 em{font-style:normal;background:linear-gradient(115deg,var(--aqua),var(--azure) 55%,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero-sub{margin-top:24px;font-size:clamp(15px,2vw,19px);color:var(--muted);max-width:460px;margin-left:auto;margin-right:auto;line-height:1.55}
-
-  /* live counter */
+  .hero-sub{margin-top:24px;font-size:clamp(15px,2vw,19px);color:var(--muted);max-width:460px;margin:24px auto 0;line-height:1.55}
+  .hero-btn{pointer-events:auto;margin-top:30px;border:none;cursor:pointer;font-family:inherit;font-weight:600;font-size:16px;padding:15px 32px;border-radius:999px;background:linear-gradient(120deg,var(--aqua),var(--azure));color:#04101f;transition:transform .2s,box-shadow .2s;box-shadow:0 10px 40px -10px rgba(54,208,232,.6)}
+  .hero-btn:hover{transform:translateY(-3px);box-shadow:0 16px 50px -10px rgba(54,208,232,.8)}
   .counter{position:absolute;left:clamp(20px,5vw,64px);bottom:clamp(28px,6vh,60px);z-index:6;text-align:left}
-  .counter .pct{font-size:clamp(60px,11vw,148px);font-weight:600;line-height:.85;letter-spacing:-.05em;
-    background:linear-gradient(120deg,#fff,#bcd6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .counter .pct{font-size:clamp(60px,11vw,148px);font-weight:600;line-height:.85;letter-spacing:-.05em;background:linear-gradient(120deg,#fff,#bcd6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
   .counter .pct span{background:linear-gradient(120deg,var(--aqua),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
   .counter .lbl{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:10px}
   .scroll-hint{position:absolute;bottom:clamp(28px,6vh,60px);right:clamp(20px,5vw,64px);z-index:6;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px;animation:bob 2s ease-in-out infinite}
   .scroll-hint::after{content:"";width:1px;height:36px;background:linear-gradient(var(--aqua),transparent)}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 
-  /* STATS STRIP */
-  .strip{background:linear-gradient(180deg,var(--bg2),#081226);padding:clamp(48px,8vw,96px) clamp(20px,5vw,64px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .strip-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,4vw,60px)}
-  .stat .n{font-size:clamp(38px,5vw,66px);font-weight:600;letter-spacing:-.04em;line-height:1}
-  .stat .n em{font-style:normal;background:linear-gradient(120deg,var(--aqua),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .stat .d{margin-top:12px;font-size:14px;color:var(--muted);line-height:1.5}
-  @media(max-width:720px){.strip-grid{grid-template-columns:repeat(2,1fr)}}
+  .app{padding:clamp(60px,9vw,120px) clamp(16px,4vw,48px);max-width:1280px;margin:0 auto}
+  .app-head{text-align:center;max-width:680px;margin:0 auto clamp(32px,5vw,56px)}
+  .app-head .tag{font-size:12px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;background:linear-gradient(90deg,var(--aqua),var(--azure));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:16px}
+  .app-head h2{font-size:clamp(30px,5vw,54px);font-weight:600;letter-spacing:-.035em;line-height:1.05}
+  .app-head p{margin-top:16px;color:var(--muted);font-size:clamp(15px,2vw,18px);line-height:1.6}
 
-  /* SECTIONS */
-  section.block{padding:clamp(70px,11vw,160px) clamp(20px,5vw,64px);max-width:1180px;margin:0 auto}
-  .sec-head{max-width:700px;margin-bottom:clamp(40px,6vw,72px)}
-  .sec-head .tag{font-size:12px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;
-    background:linear-gradient(90deg,var(--aqua),var(--azure));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:18px}
-  .sec-head h2{font-size:clamp(30px,5vw,58px);font-weight:600;letter-spacing:-.035em;line-height:1.04}
-  .sec-head p{margin-top:20px;font-size:clamp(16px,2vw,20px);color:var(--muted);line-height:1.6}
+  .map-wrap{background:var(--glass);border:1px solid var(--line);border-radius:28px;overflow:hidden;position:relative}
+  .map-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .mode-group{display:flex;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px}
+  .mode-group button{border:none;background:none;color:var(--muted);font-family:inherit;font-weight:600;font-size:13px;padding:8px 16px;border-radius:999px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:7px}
+  .mode-group button .pin{width:9px;height:9px;border-radius:50%}
+  .mode-group button[data-mode="visited"] .pin{background:var(--visited)}
+  .mode-group button[data-mode="wish"] .pin{background:var(--wish)}
+  .mode-group button.on[data-mode="visited"]{background:rgba(54,208,232,.16);color:#fff;box-shadow:inset 0 0 0 1px rgba(54,208,232,.4)}
+  .mode-group button.on[data-mode="wish"]{background:rgba(232,192,116,.16);color:#fff;box-shadow:inset 0 0 0 1px rgba(232,192,116,.45)}
+  .search-box{position:relative;margin-left:auto;flex:1;min-width:200px;max-width:340px}
+  .search-box input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:12px;padding:11px 16px;color:var(--ink);font-family:inherit;font-size:14px;transition:.2s}
+  .search-box input::placeholder{color:var(--muted)}
+  .search-box input:focus{outline:none;border-color:var(--aqua);background:rgba(54,208,232,.06)}
+  .search-results{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#0c1d36;border:1px solid var(--line);border-radius:14px;max-height:280px;overflow-y:auto;z-index:50;display:none;box-shadow:0 20px 50px -20px #000}
+  .search-results.on{display:block}
+  .search-results .opt{padding:11px 16px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:10px;transition:.15s;border-bottom:1px solid rgba(255,255,255,.04)}
+  .search-results .opt:last-child{border-bottom:none}
+  .search-results .opt:hover,.search-results .opt.active{background:rgba(54,208,232,.12)}
+  .search-results .opt .dotc{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:transparent}
+  .search-results .opt .dotc.visited{background:var(--visited);box-shadow:0 0 8px var(--visited)}
+  .search-results .opt .dotc.wish{background:var(--wish);box-shadow:0 0 8px var(--wish)}
+  .search-results .none{padding:14px 16px;color:var(--muted);font-size:14px;text-align:center}
+  @media(max-width:600px){.search-box{max-width:none;width:100%;margin-left:0}}
+  #map{width:100%;display:block;background:radial-gradient(120% 120% at 50% 0%,#0c2240,#071527);touch-action:manipulation;min-height:340px}
+  #map path.country{fill:rgba(150,185,220,.10);stroke:rgba(120,160,200,.22);stroke-width:.4px;cursor:pointer;transition:fill .25s;vector-effect:non-scaling-stroke}
+  #map path.country:hover{fill:rgba(150,185,220,.30)}
+  #map path.country.visited{fill:rgba(54,208,232,.55);stroke:rgba(54,208,232,.9)}
+  #map path.country.wish{fill:rgba(232,192,116,.5);stroke:rgba(232,192,116,.9)}
+  .pin-dot{cursor:pointer}
 
-  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-  @media(max-width:860px){.features{grid-template-columns:1fr}}
-  .card{background:var(--glass);border:1px solid var(--line);border-radius:26px;padding:36px 32px;transition:transform .35s,box-shadow .35s,border-color .35s;position:relative;overflow:hidden}
-  .card::after{content:"";position:absolute;inset:0;border-radius:26px;padding:1px;background:linear-gradient(140deg,rgba(54,208,232,.5),transparent 40%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .35s}
-  .card:hover{transform:translateY(-8px);box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
-  .card:hover::after{opacity:1}
-  .card .ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;margin-bottom:24px;font-size:25px}
-  .card:nth-child(1) .ic{background:rgba(54,208,232,.14);box-shadow:inset 0 0 0 1px rgba(54,208,232,.25)}
-  .card:nth-child(2) .ic{background:rgba(43,140,255,.14);box-shadow:inset 0 0 0 1px rgba(43,140,255,.25)}
-  .card:nth-child(3) .ic{background:rgba(232,192,116,.16);box-shadow:inset 0 0 0 1px rgba(232,192,116,.3)}
-  .card h3{font-size:21px;font-weight:600;letter-spacing:-.02em;margin-bottom:11px}
-  .card p{color:var(--muted);line-height:1.6;font-size:15px}
+  .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+  @media(max-width:600px){.stats-row{grid-template-columns:1fr}}
+  .stat-card{background:var(--glass);border:1px solid var(--line);border-radius:20px;padding:22px}
+  .stat-card .n{font-size:clamp(30px,4vw,44px);font-weight:600;letter-spacing:-.03em;line-height:1}
+  .stat-card.v .n{background:linear-gradient(120deg,var(--aqua),var(--azure));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat-card.w .n{background:linear-gradient(120deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat-card.p .n{background:linear-gradient(120deg,#fff,#bcd6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat-card .d{margin-top:8px;font-size:13px;color:var(--muted);letter-spacing:.04em}
 
-  /* CONTINENTS */
-  .cont-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(30px,5vw,70px);align-items:center}
-  @media(max-width:860px){.cont-wrap{grid-template-columns:1fr}}
-  .bars{display:flex;flex-direction:column;gap:22px}
-  .bar-row{display:flex;align-items:center;gap:16px}
-  .bar-row .cn{width:120px;font-weight:500;font-size:15px;flex-shrink:0;color:var(--ink)}
-  .track{flex:1;height:12px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
-  .fill{height:100%;border-radius:999px;width:0;transition:width 1.2s cubic-bezier(.2,.7,.2,1);box-shadow:0 0 14px rgba(54,208,232,.45)}
-  .bar-row .pv{width:46px;text-align:right;font-weight:600;font-size:15px;
-    background:linear-gradient(120deg,var(--aqua),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lists{margin-top:34px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.lists{grid-template-columns:1fr}}
+  .list-col h3{font-size:18px;font-weight:600;display:flex;align-items:center;gap:9px;margin-bottom:14px}
+  .list-col h3 .pin{width:11px;height:11px;border-radius:50%}
+  .list-col.v h3 .pin{background:var(--visited);box-shadow:0 0 10px var(--visited)}
+  .list-col.w h3 .pin{background:var(--wish);box-shadow:0 0 10px var(--wish)}
+  .entry{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px;display:flex;gap:13px;align-items:flex-start}
+  .entry .thumb{width:54px;height:54px;border-radius:12px;object-fit:cover;flex-shrink:0;background:rgba(255,255,255,.06);display:grid;place-items:center;font-size:22px}
+  .entry .body{flex:1;min-width:0}
+  .entry .nm{font-weight:600;font-size:15px}
+  .entry .nt{color:var(--muted);font-size:13px;margin-top:4px;line-height:1.5;word-wrap:break-word}
+  .entry .rm{border:none;background:rgba(255,255,255,.06);color:var(--muted);width:28px;height:28px;border-radius:8px;cursor:pointer;flex-shrink:0;font-size:15px;transition:.2s}
+  .entry .rm:hover{background:rgba(255,80,80,.2);color:#ff9a9a}
+  .empty{color:var(--muted);font-size:14px;padding:18px;border:1px dashed var(--line);border-radius:16px;text-align:center}
 
-  /* CTA */
-  .cta{background:radial-gradient(120% 140% at 0% 0%, #123a6e 0%, #0a1c3a 45%, #081226 100%);
-    color:#fff;border:1px solid var(--line);border-radius:40px;margin:0 clamp(16px,4vw,40px) clamp(60px,9vw,120px);padding:clamp(56px,8vw,108px) clamp(28px,6vw,80px);text-align:center;position:relative;overflow:hidden}
-  .cta::before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(54,208,232,.22),transparent 70%);top:-220px;right:-120px}
-  .cta::after{content:"";position:absolute;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(232,192,116,.18),transparent 70%);bottom:-180px;left:-80px}
-  .cta .tag{font-size:12px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;position:relative;margin-bottom:18px}
-  .cta h2{font-size:clamp(30px,5vw,60px);font-weight:600;letter-spacing:-.035em;position:relative;line-height:1.04}
-  .cta p{margin:20px auto 0;max-width:500px;font-size:clamp(16px,2vw,19px);color:rgba(220,232,255,.78);position:relative;line-height:1.6}
+  .overlay{position:fixed;inset:0;background:rgba(4,9,18,.7);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+  .overlay.on{display:flex}
+  .modal{background:linear-gradient(180deg,#0e1d36,#0a1628);border:1px solid var(--line);border-radius:26px;width:100%;max-width:440px;padding:28px;position:relative;box-shadow:0 40px 90px -30px #000;max-height:90vh;overflow-y:auto}
+  .modal h3{font-size:22px;font-weight:600;letter-spacing:-.02em}
+  .modal .ctry{color:var(--muted);font-size:14px;margin-top:3px;margin-bottom:20px}
+  .seg{display:flex;gap:8px;margin-bottom:18px}
+  .seg button{flex:1;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--muted);font-family:inherit;font-weight:600;font-size:13px;padding:11px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+  .seg button .pin{width:9px;height:9px;border-radius:50%}
+  .seg button[data-v="visited"] .pin{background:var(--visited)}
+  .seg button[data-v="wish"] .pin{background:var(--wish)}
+  .seg button.on[data-v="visited"]{background:rgba(54,208,232,.16);color:#fff;border-color:rgba(54,208,232,.5)}
+  .seg button.on[data-v="wish"]{background:rgba(232,192,116,.16);color:#fff;border-color:rgba(232,192,116,.5)}
+  .modal label{display:block;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+  .modal textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:13px;color:var(--ink);font-family:inherit;font-size:15px;resize:vertical;min-height:80px;margin-bottom:18px}
+  .modal textarea:focus{outline:none;border-color:var(--aqua)}
+  .photo-drop{border:1px dashed var(--line);border-radius:14px;padding:16px;text-align:center;cursor:pointer;color:var(--muted);font-size:14px;margin-bottom:8px;transition:.2s}
+  .photo-drop:hover{border-color:var(--aqua);color:var(--ink)}
+  .photo-prev{display:none;margin-bottom:18px;border-radius:14px;overflow:hidden;position:relative}
+  .photo-prev img{width:100%;max-height:200px;object-fit:cover;display:block}
+  .photo-prev .x{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px}
+  .modal-actions{display:flex;gap:10px;margin-top:6px}
+  .btn{flex:1;border:none;font-family:inherit;font-weight:600;font-size:15px;padding:13px;border-radius:13px;cursor:pointer;transition:transform .2s}
+  .btn-save{background:linear-gradient(120deg,var(--aqua),var(--azure));color:#04101f}
+  .btn-save:hover{transform:translateY(-2px)}
+  .btn-ghost{background:rgba(255,255,255,.06);color:var(--muted)}
+  .modal .close{position:absolute;top:18px;right:18px;background:rgba(255,255,255,.06);border:none;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:17px}
+
+  .toolbar{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+  .toolbar button{background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--muted);font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:10px;cursor:pointer;transition:.2s}
+  .toolbar button:hover{color:#fff;border-color:var(--aqua)}
 
   footer{padding:44px clamp(20px,5vw,64px) 64px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;color:var(--muted);font-size:14px}
-  footer .logo{font-size:18px;color:var(--ink)}
-
+  footer .logo{font-size:18px}
   @media(prefers-reduced-motion:reduce){.scroll-hint{animation:none}*{scroll-behavior:auto}}
+  .saved-flash{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(120deg,var(--aqua),var(--azure));color:#04101f;font-weight:600;padding:12px 22px;border-radius:999px;z-index:300;opacity:0;transition:.3s;pointer-events:none;font-size:14px}
+  .saved-flash.on{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
 
 <nav id="nav">
-  <div class="logo"><span class="dot"></span>Roam</div>
+  <div class="logo" onclick="scrollTo({top:0,behavior:'smooth'})"><span class="dot"></span>Roam</div>
   <div class="nav-actions">
-    <div class="lang">
-      <button data-lang="tr" class="on">TR</button>
-      <button data-lang="en">EN</button>
-    </div>
+    <div class="lang"><button data-lang="tr" class="on">TR</button><button data-lang="en">EN</button></div>
+    <button class="nav-cta" data-i18n="nav.cta" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">Haritama Git</button>
   </div>
 </nav>
 
-<!-- SCROLL HERO -->
 <div class="stage" id="stage">
   <div class="sticky">
     <canvas id="globe"></canvas>
     <div class="hero-copy">
       <div class="eyebrow" data-i18n="hero.eyebrow">Gezdiğin Her Yer</div>
       <h1 data-i18n="hero.title">Dünyanı <em>haritala.</em></h1>
-      <p class="hero-sub" data-i18n="hero.sub">Gittiğin ülkeleri işaretle, gezegenin yüzde kaçını keşfettiğini gör. Aşağı kaydır, dünya seninle dönsün.</p>
+      <p class="hero-sub" data-i18n="hero.sub">Gittiğin ülkeleri işaretle, gitmek istediklerini ekle, fotoğraf ve not bırak. Dünyan dolarken izle.</p>
+      <button class="hero-btn" data-i18n="hero.btn" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">Haritamı Oluştur</button>
     </div>
-    <div class="counter">
-      <div class="pct"><span id="pctNum">0</span>%</div>
-      <div class="lbl" data-i18n="hero.world">Dünya Keşfedildi</div>
-    </div>
+    <div class="counter"><div class="pct"><span id="pctNum">0</span>%</div><div class="lbl" data-i18n="hero.world">Dünya Keşfedildi</div></div>
     <div class="scroll-hint" data-i18n="hero.scroll">Kaydır</div>
   </div>
 </div>
 
-<!-- STATS -->
-<div class="strip">
-  <div class="strip-grid">
-    <div class="stat"><div class="n"><em>195</em></div><div class="d" data-i18n="strip.s1">Takip edebileceğin ülke</div></div>
-    <div class="stat"><div class="n">7</div><div class="d" data-i18n="strip.s2">Kıta ve bölge</div></div>
-    <div class="stat"><div class="n">100<em>+</em></div><div class="d" data-i18n="strip.s3">Bölgesel alt liste</div></div>
-    <div class="stat"><div class="n">∞</div><div class="d" data-i18n="strip.s4">Paylaşılacak anı</div></div>
+<section class="app" id="app">
+  <div class="app-head">
+    <div class="tag" data-i18n="app.tag">Senin Haritan</div>
+    <h2 data-i18n="app.title">Haritana dokun, dünyanı doldur.</h2>
+    <p data-i18n="app.sub">Bir ülkeye tıkla, gittin mi yoksa gitmek mi istiyorsun seç, fotoğraf ve not ekle. Her şey bu cihazda kalıcı olarak saklanır.</p>
   </div>
-</div>
 
-<!-- FEATURES -->
-<section class="block">
-  <div class="sec-head">
-    <div class="tag" data-i18n="feat.tag">Neler Yapabilirsin</div>
-    <h2 data-i18n="feat.title">Bir dokunuşla işaretle, ömür boyu sakla.</h2>
-    <p data-i18n="feat.sub">Roam, seyahat geçmişini güzel bir haritaya dönüştürür. Karmaşık ayar yok — sadece nereye gittiğini seç.</p>
-  </div>
-  <div class="features">
-    <div class="card">
-      <div class="ic">🗺️</div>
-      <h3 data-i18n="feat.c1t">Renkli dünya haritası</h3>
-      <p data-i18n="feat.c1p">Ziyaret ettiğin her ülke haritada anında renklenir. İlerlemeni tek bakışta gör.</p>
-    </div>
-    <div class="card">
-      <div class="ic">📊</div>
-      <h3 data-i18n="feat.c2t">Kıta yüzdeleri</h3>
-      <p data-i18n="feat.c2p">Avrupa'nın %80'i, Asya'nın %20'si... Her kıtadaki ilerlemeni ayrı ayrı takip et.</p>
-    </div>
-    <div class="card">
-      <div class="ic">📲</div>
-      <h3 data-i18n="feat.c3t">Tek dokunuşla paylaş</h3>
-      <p data-i18n="feat.c3p">Haritanı görsel olarak dışa aktar, arkadaşlarınla yarış, anılarını paylaş.</p>
-    </div>
-  </div>
-</section>
-
-<!-- CONTINENTS -->
-<section class="block">
-  <div class="cont-wrap">
-    <div>
-      <div class="sec-head" style="margin-bottom:34px">
-        <div class="tag" data-i18n="cont.tag">Kıta Kıta</div>
-        <h2 data-i18n="cont.title">Her bölgede ne kadar ilerledin?</h2>
-        <p data-i18n="cont.sub">Roam ilerlemeni kıtalara böler, böylece bir sonraki rotanı planlamak çok kolaydır.</p>
+  <div class="map-wrap">
+    <div class="map-bar">
+      <div class="mode-group" id="modeGroup">
+        <button data-mode="visited" class="on"><span class="pin"></span><span data-i18n="mode.visited">Gittim</span></button>
+        <button data-mode="wish"><span class="pin"></span><span data-i18n="mode.wish">Gitmek istiyorum</span></button>
+      </div>
+      <div class="search-box">
+        <input type="text" id="searchInput" autocomplete="off" data-i18n-ph="search.ph" placeholder="Ülke ara veya seç...">
+        <div class="search-results" id="searchResults"></div>
       </div>
     </div>
-    <div class="bars" id="bars">
-      <div class="bar-row"><div class="cn" data-i18n="cont.eu">Avrupa</div><div class="track"><div class="fill" data-w="78" style="background:linear-gradient(90deg,#1a9fd6,#0a6ca8)"></div></div><div class="pv">78%</div></div>
-      <div class="bar-row"><div class="cn" data-i18n="cont.as">Asya</div><div class="track"><div class="fill" data-w="34" style="background:linear-gradient(90deg,#ff6b54,#ff9a54)"></div></div><div class="pv">34%</div></div>
-      <div class="bar-row"><div class="cn" data-i18n="cont.na">K. Amerika</div><div class="track"><div class="fill" data-w="52" style="background:linear-gradient(90deg,#ffc24b,#ff9a54)"></div></div><div class="pv">52%</div></div>
-      <div class="bar-row"><div class="cn" data-i18n="cont.af">Afrika</div><div class="track"><div class="fill" data-w="18" style="background:linear-gradient(90deg,#1a9fd6,#46c4a0)"></div></div><div class="pv">18%</div></div>
-      <div class="bar-row"><div class="cn" data-i18n="cont.oc">Okyanusya</div><div class="track"><div class="fill" data-w="25" style="background:linear-gradient(90deg,#46c4a0,#1a9fd6)"></div></div><div class="pv">25%</div></div>
-    </div>
+    <svg id="map" viewBox="0 0 1400 720" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card v"><div class="n" id="cVisited">0</div><div class="d" data-i18n="stat.visited">Gittiğim ülke</div></div>
+    <div class="stat-card w"><div class="n" id="cWish">0</div><div class="d" data-i18n="stat.wish">İstek listesi</div></div>
+    <div class="stat-card p"><div class="n"><span id="cPct">0</span>%</div><div class="d" data-i18n="stat.world">Dünyayı gezdin</div></div>
+  </div>
+
+  <div class="lists">
+    <div class="list-col v"><h3><span class="pin"></span><span data-i18n="list.visited">Gittiğim Yerler</span></h3><div id="listVisited"></div></div>
+    <div class="list-col w"><h3><span class="pin"></span><span data-i18n="list.wish">Gitmek İstediklerim</span></h3><div id="listWish"></div></div>
+  </div>
+
+  <div class="toolbar">
+    <button id="exportBtn" data-i18n="tool.export">Yedek Al (JSON)</button>
+    <button id="resetBtn" data-i18n="tool.reset">Tümünü Temizle</button>
   </div>
 </section>
-
-<!-- CTA -->
-<div class="cta">
-  <div class="tag" data-i18n="cta.tag">Yolculuğa Başla</div>
-  <h2 data-i18n="cta.title">Haritanı doldurmaya başla.</h2>
-  <p data-i18n="cta.sub">Ücretsiz indir, ilk ülkeni işaretle. Gerisi kendiliğinden gelir.</p>
-</div>
 
 <footer>
   <div class="logo"><span class="dot"></span>Roam</div>
   <div data-i18n="foot.copy">© 2026 Roam · Gezginler için sevgiyle yapıldı.</div>
 </footer>
 
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="close" id="mClose">✕</button>
+    <h3 id="mTitle">Ülke</h3>
+    <div class="ctry" id="mCtry"></div>
+    <div class="seg" id="mSeg">
+      <button data-v="visited" class="on"><span class="pin"></span><span data-i18n="modal.visited">Gittim</span></button>
+      <button data-v="wish"><span class="pin"></span><span data-i18n="modal.wish">Gitmek istiyorum</span></button>
+    </div>
+    <label data-i18n="modal.photoLbl">Fotoğraf</label>
+    <div class="photo-drop" id="photoDrop" data-i18n="modal.photoDrop">📷 Fotoğraf eklemek için dokun</div>
+    <input type="file" id="photoInput" accept="image/*" hidden>
+    <div class="photo-prev" id="photoPrev"><img id="photoImg"><button class="x" id="photoX">✕</button></div>
+    <label data-i18n="modal.noteLbl">Not</label>
+    <textarea id="mNote" data-i18n-ph="modal.notePh" placeholder="Bu yerle ilgili bir anı, ipucu ya da plan..."></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="mDelete" data-i18n="modal.delete">Kaldır</button>
+      <button class="btn btn-save" id="mSave" data-i18n="modal.save">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<div class="saved-flash" id="flash" data-i18n="flash">Kaydedildi ✓</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <script>
-/* ---------- i18n ---------- */
 const I18N={
-  tr:{
-    "nav.dl":"Uygulamayı İndir","hero.eyebrow":"Gezdiğin Her Yer",
-    "hero.title":'Dünyanı <em>haritala.</em>',
-    "hero.sub":"Gittiğin ülkeleri işaretle, gezegenin yüzde kaçını keşfettiğini gör. Aşağı kaydır, dünya seninle dönsün.",
-    "hero.world":"Dünya Keşfedildi","hero.scroll":"Kaydır",
-    "strip.s1":"Takip edebileceğin ülke","strip.s2":"Kıta ve bölge","strip.s3":"Bölgesel alt liste","strip.s4":"Paylaşılacak anı",
-    "feat.tag":"Neler Yapabilirsin","feat.title":"Bir dokunuşla işaretle, ömür boyu sakla.",
-    "feat.sub":"Roam, seyahat geçmişini güzel bir haritaya dönüştürür. Karmaşık ayar yok — sadece nereye gittiğini seç.",
-    "feat.c1t":"Renkli dünya haritası","feat.c1p":"Ziyaret ettiğin her ülke haritada anında renklenir. İlerlemeni tek bakışta gör.",
-    "feat.c2t":"Kıta yüzdeleri","feat.c2p":"Avrupa'nın %80'i, Asya'nın %20'si... Her kıtadaki ilerlemeni ayrı ayrı takip et.",
-    "feat.c3t":"Tek dokunuşla paylaş","feat.c3p":"Haritanı görsel olarak dışa aktar, arkadaşlarınla yarış, anılarını paylaş.",
-    "cont.tag":"Kıta Kıta","cont.title":"Her bölgede ne kadar ilerledin?",
-    "cont.sub":"Roam ilerlemeni kıtalara böler, böylece bir sonraki rotanı planlamak çok kolaydır.",
-    "cont.eu":"Avrupa","cont.as":"Asya","cont.na":"K. Amerika","cont.af":"Afrika","cont.oc":"Okyanusya",
-    "cta.title":"Haritanı doldurmaya başla.","cta.sub":"Ücretsiz indir, ilk ülkeni işaretle. Gerisi kendiliğinden gelir.",
-    "cta.tag":"Yolculuğa Başla",
-    "cta.ap1":"İndir","cta.gp1":"Bul","foot.copy":"© 2026 Roam · Gezginler için sevgiyle yapıldı."
-  },
-  en:{
-    "nav.dl":"Download App","hero.eyebrow":"Everywhere You Go",
-    "hero.title":'Map your <em>world.</em>',
-    "hero.sub":"Mark every country you've visited and watch how much of the planet you've explored. Scroll, and the world turns with you.",
-    "hero.world":"World Explored","hero.scroll":"Scroll",
-    "strip.s1":"Countries to track","strip.s2":"Continents & regions","strip.s3":"Regional sub-lists","strip.s4":"Memories to share",
-    "feat.tag":"What You Can Do","feat.title":"Tap once, keep it for life.",
-    "feat.sub":"Roam turns your travel history into a beautiful map. No complex setup — just pick where you've been.",
-    "feat.c1t":"Vivid world map","feat.c1p":"Every country you visit lights up instantly. See your progress at a glance.",
-    "feat.c2t":"Continent percentages","feat.c2p":"80% of Europe, 20% of Asia... track your progress on every continent separately.",
-    "feat.c3t":"Share in one tap","feat.c3p":"Export your map as an image, compete with friends, share your journey.",
-    "cont.tag":"Continent by Continent","cont.title":"How far have you gotten in each region?",
-    "cont.sub":"Roam breaks your progress down by continent, so planning your next route is effortless.",
-    "cont.eu":"Europe","cont.as":"Asia","cont.na":"N. America","cont.af":"Africa","cont.oc":"Oceania",
-    "cta.title":"Start filling your map.","cta.sub":"Download free, mark your first country. The rest takes care of itself.",
-    "cta.tag":"Begin the Journey",
-    "cta.ap1":"Download on","cta.gp1":"Get it on","foot.copy":"© 2026 Roam · Made with love for travelers."
-  }
+ tr:{"nav.cta":"Haritama Git","hero.eyebrow":"Gezdiğin Her Yer","hero.title":'Dünyanı <em>haritala.</em>',
+  "hero.sub":"Gittiğin ülkeleri işaretle, gitmek istediklerini ekle, fotoğraf ve not bırak. Dünyan dolarken izle.",
+  "hero.btn":"Haritamı Oluştur","hero.world":"Dünya Keşfedildi","hero.scroll":"Kaydır",
+  "app.tag":"Senin Haritan","app.title":"Haritana dokun, dünyanı doldur.",
+  "app.sub":"Bir ülkeye tıkla, gittin mi yoksa gitmek mi istiyorsun seç, fotoğraf ve not ekle. Her şey bu cihazda kalıcı olarak saklanır.",
+  "mode.visited":"Gittim","mode.wish":"Gitmek istiyorum","map.hint":"İpucu: Eklemek için bir ülkeye tıkla",
+  "search.ph":"Ülke ara veya seç...","search.none":"Ülke bulunamadı",
+  "stat.visited":"Gittiğim ülke","stat.wish":"İstek listesi","stat.world":"Dünyayı gezdin",
+  "list.visited":"Gittiğim Yerler","list.wish":"Gitmek İstediklerim",
+  "tool.export":"Yedek Al (JSON)","tool.reset":"Tümünü Temizle",
+  "modal.visited":"Gittim","modal.wish":"Gitmek istiyorum","modal.photoLbl":"Fotoğraf",
+  "modal.photoDrop":"📷 Fotoğraf eklemek için dokun","modal.noteLbl":"Not",
+  "modal.notePh":"Bu yerle ilgili bir anı, ipucu ya da plan...","modal.delete":"Kaldır","modal.save":"Kaydet",
+  "flash":"Kaydedildi ✓","foot.copy":"© 2026 Roam · Gezginler için sevgiyle yapıldı.",
+  "empty.visited":"Henüz yer eklemedin. Haritadan bir ülke seç.","empty.wish":"İstek listen boş. Bir hayal kur ✨"},
+ en:{"nav.cta":"Go to My Map","hero.eyebrow":"Everywhere You Go","hero.title":'Map your <em>world.</em>',
+  "hero.sub":"Mark the countries you've visited, add the ones you dream of, leave photos and notes. Watch your world fill up.",
+  "hero.btn":"Build My Map","hero.world":"World Explored","hero.scroll":"Scroll",
+  "app.tag":"Your Map","app.title":"Tap your map, fill your world.",
+  "app.sub":"Click a country, choose visited or wishlist, add a photo and a note. Everything is saved permanently on this device.",
+  "mode.visited":"Visited","mode.wish":"Want to go","map.hint":"Tip: click a country to add it",
+  "search.ph":"Search or pick a country...","search.none":"No country found",
+  "stat.visited":"Countries visited","stat.wish":"Wishlist","stat.world":"of the world",
+  "list.visited":"Places I've Been","list.wish":"Places I Want to Go",
+  "tool.export":"Export (JSON)","tool.reset":"Clear All",
+  "modal.visited":"Visited","modal.wish":"Want to go","modal.photoLbl":"Photo",
+  "modal.photoDrop":"📷 Tap to add a photo","modal.noteLbl":"Note",
+  "modal.notePh":"A memory, a tip, or a plan for this place...","modal.delete":"Remove","modal.save":"Save",
+  "flash":"Saved ✓","foot.copy":"© 2026 Roam · Made with love for travelers.",
+  "empty.visited":"No places yet. Pick a country on the map.","empty.wish":"Your wishlist is empty. Dream big ✨"}
 };
-function setLang(l){
-  document.documentElement.lang=l;
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const v=I18N[l][el.getAttribute('data-i18n')];
-    if(v!=null) el.innerHTML=v;
-  });
-  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+let LANG='tr';
+function t(k){return I18N[LANG][k]??k}
+function applyLang(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const v=I18N[LANG][el.getAttribute('data-i18n')];if(v!=null)el.innerHTML=v});
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const v=I18N[LANG][el.getAttribute('data-i18n-ph')];if(v!=null)el.placeholder=v});
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===LANG));
+  renderLists();
 }
-document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
-setLang('tr');
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{LANG=b.dataset.lang;localStorage.setItem('roam_lang',LANG);applyLang()});
 
-/* ---------- nav shadow ---------- */
-addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>20));
+const KEY='roam_data_v1';
+let DATA={};
+function load(){try{DATA=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){DATA={}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DATA));flash()}catch(e){alert(LANG==='tr'?'Kayıt alanı doldu. Bazı fotoğrafları kaldırmayı dene.':'Storage full. Try removing some photos.')}}
+let flashT;
+function flash(){const f=document.getElementById('flash');f.classList.add('on');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('on'),1400)}
 
-/* ---------- continent bars on view ---------- */
-const bo=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){
-  e.target.querySelectorAll('.fill').forEach(f=>f.style.width=f.dataset.w+'%');bo.unobserve(e.target);}})},{threshold:.4});
-bo.observe(document.getElementById('bars'));
+const svg=d3.select('#map');
+const projection=d3.geoNaturalEarth1().scale(265).translate([700,375]);
+const path=d3.geoPath(projection);
+let MODE='visited';
+let countryById={};
+let COUNTRY_LIST=[];
 
-/* ---------- SCROLL-DRIVEN GLOBE ---------- */
+document.querySelectorAll('#modeGroup button').forEach(b=>b.onclick=()=>{
+  MODE=b.dataset.mode;
+  document.querySelectorAll('#modeGroup button').forEach(x=>x.classList.toggle('on',x===b));
+});
+
+/* ---- search / dropdown ---- */
+const searchInput=document.getElementById('searchInput');
+const searchResults=document.getElementById('searchResults');
+let activeIdx=-1;
+function normalize(s){return (s||'').toLocaleLowerCase('tr').replace(/[çğıöşü]/g,c=>({'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u'}[c]))}
+function renderSearch(q){
+  const nq=normalize(q.trim());
+  let list = nq ? COUNTRY_LIST.filter(c=>normalize(c.name).includes(nq)) : COUNTRY_LIST.slice();
+  list=list.slice(0,60);
+  if(!list.length){searchResults.innerHTML=`<div class="none">${t('search.none')}</div>`;searchResults.classList.add('on');return}
+  searchResults.innerHTML=list.map((c,i)=>{
+    const st=DATA[c.id]?DATA[c.id].status:'';
+    return `<div class="opt" data-id="${c.id}" data-name="${escapeHtml(c.name)}" data-i="${i}"><span class="dotc ${st}"></span>${escapeHtml(c.name)}</div>`;
+  }).join('');
+  searchResults.classList.add('on');activeIdx=-1;
+  searchResults.querySelectorAll('.opt').forEach(o=>o.onclick=()=>{
+    searchResults.classList.remove('on');searchInput.value='';
+    openModal(o.dataset.id,o.dataset.name);
+  });
+}
+searchInput.addEventListener('focus',()=>renderSearch(searchInput.value));
+searchInput.addEventListener('input',()=>renderSearch(searchInput.value));
+searchInput.addEventListener('keydown',e=>{
+  const opts=[...searchResults.querySelectorAll('.opt')];if(!opts.length)return;
+  if(e.key==='ArrowDown'){e.preventDefault();activeIdx=Math.min(activeIdx+1,opts.length-1)}
+  else if(e.key==='ArrowUp'){e.preventDefault();activeIdx=Math.max(activeIdx-1,0)}
+  else if(e.key==='Enter'){e.preventDefault();(opts[activeIdx]||opts[0]).click();return}
+  else if(e.key==='Escape'){searchResults.classList.remove('on');return}
+  opts.forEach((o,i)=>o.classList.toggle('active',i===activeIdx));
+  if(opts[activeIdx])opts[activeIdx].scrollIntoView({block:'nearest'});
+});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-box'))searchResults.classList.remove('on')});
+
+d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json').then(world=>{
+  const countries=topojson.feature(world,world.objects.countries).features;
+  svg.selectAll('path.country').data(countries).enter().append('path')
+    .attr('class','country').attr('d',path).attr('data-id',d=>d.id)
+    .each(function(d){countryById[d.id]={name:d.properties.name}})
+    .on('click',(e,d)=>openModal(d.id,d.properties.name));
+  COUNTRY_LIST=countries
+    .filter(d=>d.properties.name)
+    .map(d=>({id:d.id,name:d.properties.name}))
+    .sort((a,b)=>a.name.localeCompare(b.name));
+  refreshMap();
+}).catch(()=>{
+  document.getElementById('map').insertAdjacentHTML('afterend',
+    '<p style="color:var(--muted);text-align:center;padding:20px">Harita verisi yüklenemedi — internet bağlantını kontrol et.</p>');
+});
+
+function refreshMap(){
+  svg.selectAll('path.country').attr('class',d=>{const r=DATA[d.id];return 'country'+(r?' '+r.status:'')});
+  svg.selectAll('circle.pin-dot').remove();
+  const feats=svg.selectAll('path.country').data();
+  Object.keys(DATA).forEach(id=>{
+    const feat=feats.find(d=>String(d.id)===String(id));
+    if(!feat)return;
+    const c=path.centroid(feat);if(isNaN(c[0]))return;
+    svg.append('circle').attr('class','pin-dot').attr('cx',c[0]).attr('cy',c[1]).attr('r',5)
+      .attr('fill',DATA[id].status==='visited'?'#36d0e8':'#e8c074')
+      .attr('stroke','#04101f').attr('stroke-width',1.2)
+      .style('filter','drop-shadow(0 0 5px '+(DATA[id].status==='visited'?'#36d0e8':'#e8c074')+')')
+      .on('click',()=>openModal(id,(countryById[id]||{}).name||id));
+  });
+  updateStats();
+}
+
+const TOTAL=195;
+function updateStats(){
+  let v=0,w=0;Object.values(DATA).forEach(r=>{r.status==='visited'?v++:w++});
+  document.getElementById('cVisited').textContent=v;
+  document.getElementById('cWish').textContent=w;
+  document.getElementById('cPct').textContent=Math.round(v/TOTAL*100);
+}
+
+function renderLists(){
+  const vBox=document.getElementById('listVisited'),wBox=document.getElementById('listWish');
+  const vItems=[],wItems=[];
+  Object.keys(DATA).forEach(id=>{const r=DATA[id];(r.status==='visited'?vItems:wItems).push({id,...r})});
+  function row(it){
+    const thumb=it.photo?`<img class="thumb" src="${it.photo}">`:`<div class="thumb">${it.status==='visited'?'📍':'✨'}</div>`;
+    const note=it.note?`<div class="nt">${escapeHtml(it.note)}</div>`:'';
+    return `<div class="entry">${thumb}<div class="body"><div class="nm">${escapeHtml(it.name||(countryById[it.id]||{}).name||it.id)}</div>${note}</div><button class="rm" data-rm="${it.id}">🗑</button></div>`;
+  }
+  vBox.innerHTML=vItems.length?vItems.map(row).join(''):`<div class="empty">${t('empty.visited')}</div>`;
+  wBox.innerHTML=wItems.length?wItems.map(row).join(''):`<div class="empty">${t('empty.wish')}</div>`;
+  document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{delete DATA[b.dataset.rm];save();refreshMap();renderLists()});
+}
+function escapeHtml(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+
+const overlay=document.getElementById('overlay');
+let curId=null,curName='',curPhoto=null,curStatus='visited';
+function openModal(id,name){
+  curId=id;curName=name;
+  const ex=DATA[id];
+  curStatus=ex?ex.status:MODE;curPhoto=ex?ex.photo:null;
+  document.getElementById('mTitle').textContent=name;
+  document.getElementById('mCtry').textContent=ex?(LANG==='tr'?'Düzenleniyor':'Editing'):(LANG==='tr'?'Yeni ekleniyor':'Adding new');
+  document.getElementById('mNote').value=ex?(ex.note||''):'';
+  document.querySelectorAll('#mSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===curStatus));
+  setPhoto(curPhoto);
+  document.getElementById('mDelete').style.display=ex?'block':'none';
+  overlay.classList.add('on');
+}
+function closeModal(){overlay.classList.remove('on')}
+document.getElementById('mClose').onclick=closeModal;
+overlay.onclick=e=>{if(e.target===overlay)closeModal()};
+document.querySelectorAll('#mSeg button').forEach(b=>b.onclick=()=>{curStatus=b.dataset.v;document.querySelectorAll('#mSeg button').forEach(x=>x.classList.toggle('on',x===b))});
+
+const photoInput=document.getElementById('photoInput');
+document.getElementById('photoDrop').onclick=()=>photoInput.click();
+photoInput.onchange=()=>{const f=photoInput.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{const img=new Image();img.onload=()=>{
+    const cv=document.createElement('canvas');const max=800;let w=img.width,h=img.height;
+    if(w>h&&w>max){h*=max/w;w=max}else if(h>max){w*=max/h;h=max}
+    cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);
+    curPhoto=cv.toDataURL('image/jpeg',0.8);setPhoto(curPhoto);
+  };img.src=rd.result};rd.readAsDataURL(f)};
+function setPhoto(src){const p=document.getElementById('photoPrev'),d=document.getElementById('photoDrop');
+  if(src){document.getElementById('photoImg').src=src;p.style.display='block';d.style.display='none'}
+  else{p.style.display='none';d.style.display='block'}}
+document.getElementById('photoX').onclick=()=>{curPhoto=null;setPhoto(null);photoInput.value=''};
+
+document.getElementById('mSave').onclick=()=>{
+  DATA[curId]={status:curStatus,note:document.getElementById('mNote').value.trim(),photo:curPhoto,name:curName};
+  save();refreshMap();renderLists();closeModal();
+};
+document.getElementById('mDelete').onclick=()=>{delete DATA[curId];save();refreshMap();renderLists();closeModal()};
+
+document.getElementById('resetBtn').onclick=()=>{
+  if(confirm(LANG==='tr'?'Tüm işaretlerin silinecek. Emin misin?':'This will delete all your marks. Are you sure?')){DATA={};save();refreshMap();renderLists()}
+};
+document.getElementById('exportBtn').onclick=()=>{
+  const blob=new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='roam-backup.json';a.click();
+};
+
 const cv=document.getElementById('globe'),ctx=cv.getContext('2d');
 let W,H,DPR;
-function resize(){DPR=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
-addEventListener('resize',resize);
-
-/* land points: lat/lon scattered across continents (approx silhouettes) */
+function resize(){DPR=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)}
+addEventListener('resize',()=>{resize();drawGlobe()});
 const LAND=[];
-function blob(latMin,latMax,lonMin,lonMax,n){for(let i=0;i<n;i++){LAND.push({la:latMin+Math.random()*(latMax-latMin),lo:lonMin+Math.random()*(lonMax-lonMin),c:0});}}
-// Europe
-blob(36,60,-9,40,140);blob(58,70,8,30,40);
-// Africa
-blob(-34,34,-16,50,260);
-// Asia
-blob(8,70,40,140,420);blob(0,20,95,140,90);
-// India
-blob(8,30,70,88,70);
-// Oceania
-blob(-43,-12,113,154,90);
-// North America
-blob(15,68,-125,-60,300);
-// South America
-blob(-54,12,-80,-35,200);
-// Greenland
-blob(60,82,-50,-20,40);
-
-// assign each land point a "fill order" 0..1 grouped so countries fill region by region
-LAND.forEach(p=>p.ord=Math.random());
-LAND.sort((a,b)=>a.ord-b.ord);
-LAND.forEach((p,i)=>p.fillAt=i/LAND.length);
-
-function project(la,lo,rot,R,cx,cy){
-  const lat=la*Math.PI/180, lon=(lo+rot)*Math.PI/180;
-  const x=Math.cos(lat)*Math.sin(lon);
-  const y=Math.sin(lat);
-  const z=Math.cos(lat)*Math.cos(lon);
-  return {x:cx+x*R, y:cy-y*R, z};
-}
-
-let prog=0; // 0..1 scroll progress through stage
-function draw(){
-  ctx.clearRect(0,0,W,H);
-  const cx=W*0.5, cy=H*0.52, R=Math.min(W,H)*0.34;
-  const rot=prog*300 - 30;
-
-  // atmosphere glow halo
-  const halo=ctx.createRadialGradient(cx,cy,R*0.85,cx,cy,R*1.45);
-  halo.addColorStop(0,'rgba(54,208,232,.32)');
-  halo.addColorStop(.5,'rgba(43,140,255,.12)');
-  halo.addColorStop(1,'rgba(43,140,255,0)');
+function blob(a,b,c,d,n){for(let i=0;i<n;i++)LAND.push({la:a+Math.random()*(b-a),lo:c+Math.random()*(d-c)})}
+blob(36,60,-9,40,140);blob(58,70,8,30,40);blob(-34,34,-16,50,260);blob(8,70,40,140,420);
+blob(0,20,95,140,90);blob(8,30,70,88,70);blob(-43,-12,113,154,90);blob(15,68,-125,-60,300);
+blob(-54,12,-80,-35,200);blob(60,82,-50,-20,40);
+LAND.forEach(p=>p.fillAt=Math.random());LAND.sort((a,b)=>a.fillAt-b.fillAt);LAND.forEach((p,i)=>p.fillAt=i/LAND.length);
+function proj(la,lo,rot,R,cx,cy){const lat=la*Math.PI/180,lon=(lo+rot)*Math.PI/180;return{x:cx+Math.cos(lat)*Math.sin(lon)*R,y:cy-Math.sin(lat)*R,z:Math.cos(lat)*Math.cos(lon)}}
+let prog=0;
+function drawGlobe(){
+  ctx.clearRect(0,0,W,H);const cx=W*.5,cy=H*.52,R=Math.min(W,H)*.34,rot=prog*300-30;
+  const halo=ctx.createRadialGradient(cx,cy,R*.85,cx,cy,R*1.45);halo.addColorStop(0,'rgba(54,208,232,.32)');halo.addColorStop(.5,'rgba(43,140,255,.12)');halo.addColorStop(1,'rgba(43,140,255,0)');
   ctx.beginPath();ctx.arc(cx,cy,R*1.45,0,7);ctx.fillStyle=halo;ctx.fill();
-
-  // ocean sphere (deep, with lit edge)
-  const g=ctx.createRadialGradient(cx-R*0.35,cy-R*0.4,R*0.1,cx,cy,R*1.05);
-  g.addColorStop(0,'#1b4e7a');g.addColorStop(.55,'#0e2c4d');g.addColorStop(1,'#071a30');
+  const g=ctx.createRadialGradient(cx-R*.35,cy-R*.4,R*.1,cx,cy,R*1.05);g.addColorStop(0,'#1b4e7a');g.addColorStop(.55,'#0e2c4d');g.addColorStop(1,'#071a30');
   ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.fillStyle=g;ctx.fill();
-
-  // rim light
-  ctx.lineWidth=1.5;
-  const rim=ctx.createLinearGradient(cx-R,cy-R,cx+R,cy+R);
-  rim.addColorStop(0,'rgba(54,208,232,.9)');rim.addColorStop(1,'rgba(43,140,255,.2)');
-  ctx.strokeStyle=rim;ctx.stroke();
-
-  // graticule
+  const rim=ctx.createLinearGradient(cx-R,cy-R,cx+R,cy+R);rim.addColorStop(0,'rgba(54,208,232,.9)');rim.addColorStop(1,'rgba(43,140,255,.2)');ctx.lineWidth=1.5;ctx.strokeStyle=rim;ctx.stroke();
   ctx.strokeStyle='rgba(120,190,230,.16)';ctx.lineWidth=1;
-  for(let la=-60;la<=60;la+=30){ctx.beginPath();let s=false;
-    for(let lo=-180;lo<=180;lo+=6){const p=project(la,lo,rot,R,cx,cy);if(p.z>0){if(!s){ctx.moveTo(p.x,p.y);s=true;}else ctx.lineTo(p.x,p.y);}else s=false;}ctx.stroke();}
-  for(let lo=-180;lo<180;lo+=30){ctx.beginPath();let s=false;
-    for(let la=-90;la<=90;la+=5){const p=project(la,lo,rot,R,cx,cy);if(p.z>0){if(!s){ctx.moveTo(p.x,p.y);s=true;}else ctx.lineTo(p.x,p.y);}else s=false;}ctx.stroke();}
-
-  // land points
-  const filled = prog;
-  for(const p of LAND){
-    const pr=project(p.la,p.lo,rot,R,cx,cy);
-    if(pr.z<=0) continue;
-    const visited = p.fillAt < filled;
-    const sz = 2.3 + pr.z*1.7;
-    ctx.beginPath();ctx.arc(pr.x,pr.y,sz,0,7);
-    if(visited){
-      // aqua->gold glow for visited
-      ctx.shadowBlur=10;ctx.shadowColor='rgba(54,208,232,.8)';
-      const mix=p.fillAt/Math.max(filled,.001);
-      ctx.fillStyle = mix>0.6
-        ? 'rgba(232,192,116,'+(0.7+pr.z*0.3)+')'
-        : 'rgba(54,208,232,'+(0.7+pr.z*0.3)+')';
-    }else{
-      ctx.shadowBlur=0;
-      ctx.fillStyle='rgba(150,185,220,'+(0.16+pr.z*0.16)+')';
-    }
-    ctx.fill();
-  }
-  ctx.shadowBlur=0;
-  document.getElementById('pctNum').textContent=Math.round(filled*100);
+  for(let la=-60;la<=60;la+=30){ctx.beginPath();let s=false;for(let lo=-180;lo<=180;lo+=6){const p=proj(la,lo,rot,R,cx,cy);if(p.z>0){s?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);s=true}else s=false}ctx.stroke()}
+  for(let lo=-180;lo<180;lo+=30){ctx.beginPath();let s=false;for(let la=-90;la<=90;la+=5){const p=proj(la,lo,rot,R,cx,cy);if(p.z>0){s?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);s=true}else s=false}ctx.stroke()}
+  for(const p of LAND){const pr=proj(p.la,p.lo,rot,R,cx,cy);if(pr.z<=0)continue;const vis=p.fillAt<prog,sz=2.3+pr.z*1.7;ctx.beginPath();ctx.arc(pr.x,pr.y,sz,0,7);
+    if(vis){ctx.shadowBlur=10;ctx.shadowColor='rgba(54,208,232,.8)';ctx.fillStyle=p.fillAt/Math.max(prog,.001)>.6?'rgba(232,192,116,'+(.7+pr.z*.3)+')':'rgba(54,208,232,'+(.7+pr.z*.3)+')'}
+    else{ctx.shadowBlur=0;ctx.fillStyle='rgba(150,185,220,'+(.16+pr.z*.16)+')'}ctx.fill()}
+  ctx.shadowBlur=0;document.getElementById('pctNum').textContent=Math.round(prog*100);
 }
-
-function onScroll(){
-  const st=document.getElementById('stage');
-  const r=st.getBoundingClientRect();
-  const total=st.offsetHeight-innerHeight;
-  prog=Math.min(1,Math.max(0,-r.top/total));
-  draw();
-}
-resize();onScroll();
+function onScroll(){const st=document.getElementById('stage'),r=st.getBoundingClientRect(),total=st.offsetHeight-innerHeight;prog=Math.min(1,Math.max(0,-r.top/total));drawGlobe();document.getElementById('nav').classList.toggle('scrolled',scrollY>20)}
 addEventListener('scroll',onScroll,{passive:true});
-// gentle idle render for crispness on load
-draw();
+
+LANG=localStorage.getItem('roam_lang')||'tr';
+load();applyLang();renderLists();resize();drawGlobe();onScroll();
 </script>
 </body>
 </html>
