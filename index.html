@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roam — Gezdiğin Ülkeleri Haritala</title>
+<style>
+  :root{
+    --bg:#060d1a;            /* deep midnight */
+    --bg2:#0b1830;           /* raised panel */
+    --ink:#f3f7ff;           /* near-white text */
+    --muted:#8fa6c4;         /* muted slate */
+    --aqua:#36d0e8;          /* vivid aqua */
+    --azure:#2b8cff;         /* electric azure */
+    --gold:#e8c074;          /* champagne gold */
+    --gold2:#f6dfa6;
+    --line:rgba(255,255,255,.10);
+    --glass:rgba(255,255,255,.045);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--bg);color:var(--ink);
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  ::selection{background:var(--aqua);color:#04101f}
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px clamp(20px,5vw,64px);
+    backdrop-filter:saturate(160%) blur(16px);
+    background:rgba(6,13,26,.55);
+    border-bottom:1px solid transparent;transition:border-color .3s,background .3s;
+  }
+  nav.scrolled{border-bottom-color:var(--line);background:rgba(6,13,26,.8)}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:21px;letter-spacing:-.02em}
+  .logo .dot{width:14px;height:14px;border-radius:50%;background:conic-gradient(from 200deg,var(--aqua),var(--azure),var(--gold),var(--aqua));box-shadow:0 0 16px 1px rgba(54,208,232,.6)}
+  .nav-actions{display:flex;align-items:center;gap:14px}
+  .lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;font-size:13px;font-weight:600;background:var(--glass)}
+  .lang button{border:none;background:none;padding:7px 15px;cursor:pointer;color:var(--muted);font-family:inherit;transition:color .2s}
+  .lang button.on{background:linear-gradient(120deg,var(--aqua),var(--azure));color:#04101f}
+
+  /* HERO SCROLL STAGE */
+  .stage{height:440vh;position:relative}
+  .sticky{position:sticky;top:0;height:100vh;overflow:hidden;
+    background:
+      radial-gradient(130% 100% at 50% 8%, #0e2548 0%, #081428 42%, var(--bg) 78%);
+    display:flex;align-items:center;justify-content:center}
+  /* starfield */
+  .sticky::before{content:"";position:absolute;inset:0;
+    background-image:
+      radial-gradient(1.4px 1.4px at 20% 30%, rgba(255,255,255,.7), transparent),
+      radial-gradient(1.2px 1.2px at 70% 20%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1.6px 1.6px at 80% 65%, rgba(255,255,255,.6), transparent),
+      radial-gradient(1px 1px at 35% 75%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 55% 45%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 12% 60%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1.2px 1.2px at 90% 40%, rgba(255,255,255,.5), transparent);
+    opacity:.7}
+  #globe{position:absolute;inset:0;width:100%;height:100%;z-index:2}
+  .hero-copy{position:relative;z-index:5;text-align:center;pointer-events:none;padding:0 20px;transform:translateY(-3vh)}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.34em;text-transform:uppercase;
+    background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:20px}
+  .hero-copy h1{font-size:clamp(42px,8.4vw,116px);line-height:.94;font-weight:600;letter-spacing:-.045em;
+    text-shadow:0 2px 60px rgba(43,140,255,.25)}
+  .hero-copy h1 em{font-style:normal;background:linear-gradient(115deg,var(--aqua),var(--azure) 55%,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero-sub{margin-top:24px;font-size:clamp(15px,2vw,19px);color:var(--muted);max-width:460px;margin-left:auto;margin-right:auto;line-height:1.55}
+
+  /* live counter */
+  .counter{position:absolute;left:clamp(20px,5vw,64px);bottom:clamp(28px,6vh,60px);z-index:6;text-align:left}
+  .counter .pct{font-size:clamp(60px,11vw,148px);font-weight:600;line-height:.85;letter-spacing:-.05em;
+    background:linear-gradient(120deg,#fff,#bcd6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .counter .pct span{background:linear-gradient(120deg,var(--aqua),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .counter .lbl{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:10px}
+  .scroll-hint{position:absolute;bottom:clamp(28px,6vh,60px);right:clamp(20px,5vw,64px);z-index:6;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px;animation:bob 2s ease-in-out infinite}
+  .scroll-hint::after{content:"";width:1px;height:36px;background:linear-gradient(var(--aqua),transparent)}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+
+  /* STATS STRIP */
+  .strip{background:linear-gradient(180deg,var(--bg2),#081226);padding:clamp(48px,8vw,96px) clamp(20px,5vw,64px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .strip-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,4vw,60px)}
+  .stat .n{font-size:clamp(38px,5vw,66px);font-weight:600;letter-spacing:-.04em;line-height:1}
+  .stat .n em{font-style:normal;background:linear-gradient(120deg,var(--aqua),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .d{margin-top:12px;font-size:14px;color:var(--muted);line-height:1.5}
+  @media(max-width:720px){.strip-grid{grid-template-columns:repeat(2,1fr)}}
+
+  /* SECTIONS */
+  section.block{padding:clamp(70px,11vw,160px) clamp(20px,5vw,64px);max-width:1180px;margin:0 auto}
+  .sec-head{max-width:700px;margin-bottom:clamp(40px,6vw,72px)}
+  .sec-head .tag{font-size:12px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;
+    background:linear-gradient(90deg,var(--aqua),var(--azure));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:18px}
+  .sec-head h2{font-size:clamp(30px,5vw,58px);font-weight:600;letter-spacing:-.035em;line-height:1.04}
+  .sec-head p{margin-top:20px;font-size:clamp(16px,2vw,20px);color:var(--muted);line-height:1.6}
+
+  .features{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  @media(max-width:860px){.features{grid-template-columns:1fr}}
+  .card{background:var(--glass);border:1px solid var(--line);border-radius:26px;padding:36px 32px;transition:transform .35s,box-shadow .35s,border-color .35s;position:relative;overflow:hidden}
+  .card::after{content:"";position:absolute;inset:0;border-radius:26px;padding:1px;background:linear-gradient(140deg,rgba(54,208,232,.5),transparent 40%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .35s}
+  .card:hover{transform:translateY(-8px);box-shadow:0 30px 60px -30px rgba(0,0,0,.7)}
+  .card:hover::after{opacity:1}
+  .card .ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;margin-bottom:24px;font-size:25px}
+  .card:nth-child(1) .ic{background:rgba(54,208,232,.14);box-shadow:inset 0 0 0 1px rgba(54,208,232,.25)}
+  .card:nth-child(2) .ic{background:rgba(43,140,255,.14);box-shadow:inset 0 0 0 1px rgba(43,140,255,.25)}
+  .card:nth-child(3) .ic{background:rgba(232,192,116,.16);box-shadow:inset 0 0 0 1px rgba(232,192,116,.3)}
+  .card h3{font-size:21px;font-weight:600;letter-spacing:-.02em;margin-bottom:11px}
+  .card p{color:var(--muted);line-height:1.6;font-size:15px}
+
+  /* CONTINENTS */
+  .cont-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(30px,5vw,70px);align-items:center}
+  @media(max-width:860px){.cont-wrap{grid-template-columns:1fr}}
+  .bars{display:flex;flex-direction:column;gap:22px}
+  .bar-row{display:flex;align-items:center;gap:16px}
+  .bar-row .cn{width:120px;font-weight:500;font-size:15px;flex-shrink:0;color:var(--ink)}
+  .track{flex:1;height:12px;background:rgba(255,255,255,.07);border-radius:999px;overflow:hidden}
+  .fill{height:100%;border-radius:999px;width:0;transition:width 1.2s cubic-bezier(.2,.7,.2,1);box-shadow:0 0 14px rgba(54,208,232,.45)}
+  .bar-row .pv{width:46px;text-align:right;font-weight:600;font-size:15px;
+    background:linear-gradient(120deg,var(--aqua),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* CTA */
+  .cta{background:radial-gradient(120% 140% at 0% 0%, #123a6e 0%, #0a1c3a 45%, #081226 100%);
+    color:#fff;border:1px solid var(--line);border-radius:40px;margin:0 clamp(16px,4vw,40px) clamp(60px,9vw,120px);padding:clamp(56px,8vw,108px) clamp(28px,6vw,80px);text-align:center;position:relative;overflow:hidden}
+  .cta::before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(54,208,232,.22),transparent 70%);top:-220px;right:-120px}
+  .cta::after{content:"";position:absolute;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(232,192,116,.18),transparent 70%);bottom:-180px;left:-80px}
+  .cta .tag{font-size:12px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;background:linear-gradient(90deg,var(--gold),var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;position:relative;margin-bottom:18px}
+  .cta h2{font-size:clamp(30px,5vw,60px);font-weight:600;letter-spacing:-.035em;position:relative;line-height:1.04}
+  .cta p{margin:20px auto 0;max-width:500px;font-size:clamp(16px,2vw,19px);color:rgba(220,232,255,.78);position:relative;line-height:1.6}
+
+  footer{padding:44px clamp(20px,5vw,64px) 64px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;color:var(--muted);font-size:14px}
+  footer .logo{font-size:18px;color:var(--ink)}
+
+  @media(prefers-reduced-motion:reduce){.scroll-hint{animation:none}*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="logo"><span class="dot"></span>Roam</div>
+  <div class="nav-actions">
+    <div class="lang">
+      <button data-lang="tr" class="on">TR</button>
+      <button data-lang="en">EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- SCROLL HERO -->
+<div class="stage" id="stage">
+  <div class="sticky">
+    <canvas id="globe"></canvas>
+    <div class="hero-copy">
+      <div class="eyebrow" data-i18n="hero.eyebrow">Gezdiğin Her Yer</div>
+      <h1 data-i18n="hero.title">Dünyanı <em>haritala.</em></h1>
+      <p class="hero-sub" data-i18n="hero.sub">Gittiğin ülkeleri işaretle, gezegenin yüzde kaçını keşfettiğini gör. Aşağı kaydır, dünya seninle dönsün.</p>
+    </div>
+    <div class="counter">
+      <div class="pct"><span id="pctNum">0</span>%</div>
+      <div class="lbl" data-i18n="hero.world">Dünya Keşfedildi</div>
+    </div>
+    <div class="scroll-hint" data-i18n="hero.scroll">Kaydır</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="strip">
+  <div class="strip-grid">
+    <div class="stat"><div class="n"><em>195</em></div><div class="d" data-i18n="strip.s1">Takip edebileceğin ülke</div></div>
+    <div class="stat"><div class="n">7</div><div class="d" data-i18n="strip.s2">Kıta ve bölge</div></div>
+    <div class="stat"><div class="n">100<em>+</em></div><div class="d" data-i18n="strip.s3">Bölgesel alt liste</div></div>
+    <div class="stat"><div class="n">∞</div><div class="d" data-i18n="strip.s4">Paylaşılacak anı</div></div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="block">
+  <div class="sec-head">
+    <div class="tag" data-i18n="feat.tag">Neler Yapabilirsin</div>
+    <h2 data-i18n="feat.title">Bir dokunuşla işaretle, ömür boyu sakla.</h2>
+    <p data-i18n="feat.sub">Roam, seyahat geçmişini güzel bir haritaya dönüştürür. Karmaşık ayar yok — sadece nereye gittiğini seç.</p>
+  </div>
+  <div class="features">
+    <div class="card">
+      <div class="ic">🗺️</div>
+      <h3 data-i18n="feat.c1t">Renkli dünya haritası</h3>
+      <p data-i18n="feat.c1p">Ziyaret ettiğin her ülke haritada anında renklenir. İlerlemeni tek bakışta gör.</p>
+    </div>
+    <div class="card">
+      <div class="ic">📊</div>
+      <h3 data-i18n="feat.c2t">Kıta yüzdeleri</h3>
+      <p data-i18n="feat.c2p">Avrupa'nın %80'i, Asya'nın %20'si... Her kıtadaki ilerlemeni ayrı ayrı takip et.</p>
+    </div>
+    <div class="card">
+      <div class="ic">📲</div>
+      <h3 data-i18n="feat.c3t">Tek dokunuşla paylaş</h3>
+      <p data-i18n="feat.c3p">Haritanı görsel olarak dışa aktar, arkadaşlarınla yarış, anılarını paylaş.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTINENTS -->
+<section class="block">
+  <div class="cont-wrap">
+    <div>
+      <div class="sec-head" style="margin-bottom:34px">
+        <div class="tag" data-i18n="cont.tag">Kıta Kıta</div>
+        <h2 data-i18n="cont.title">Her bölgede ne kadar ilerledin?</h2>
+        <p data-i18n="cont.sub">Roam ilerlemeni kıtalara böler, böylece bir sonraki rotanı planlamak çok kolaydır.</p>
+      </div>
+    </div>
+    <div class="bars" id="bars">
+      <div class="bar-row"><div class="cn" data-i18n="cont.eu">Avrupa</div><div class="track"><div class="fill" data-w="78" style="background:linear-gradient(90deg,#1a9fd6,#0a6ca8)"></div></div><div class="pv">78%</div></div>
+      <div class="bar-row"><div class="cn" data-i18n="cont.as">Asya</div><div class="track"><div class="fill" data-w="34" style="background:linear-gradient(90deg,#ff6b54,#ff9a54)"></div></div><div class="pv">34%</div></div>
+      <div class="bar-row"><div class="cn" data-i18n="cont.na">K. Amerika</div><div class="track"><div class="fill" data-w="52" style="background:linear-gradient(90deg,#ffc24b,#ff9a54)"></div></div><div class="pv">52%</div></div>
+      <div class="bar-row"><div class="cn" data-i18n="cont.af">Afrika</div><div class="track"><div class="fill" data-w="18" style="background:linear-gradient(90deg,#1a9fd6,#46c4a0)"></div></div><div class="pv">18%</div></div>
+      <div class="bar-row"><div class="cn" data-i18n="cont.oc">Okyanusya</div><div class="track"><div class="fill" data-w="25" style="background:linear-gradient(90deg,#46c4a0,#1a9fd6)"></div></div><div class="pv">25%</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta">
+  <div class="tag" data-i18n="cta.tag">Yolculuğa Başla</div>
+  <h2 data-i18n="cta.title">Haritanı doldurmaya başla.</h2>
+  <p data-i18n="cta.sub">Ücretsiz indir, ilk ülkeni işaretle. Gerisi kendiliğinden gelir.</p>
+</div>
+
+<footer>
+  <div class="logo"><span class="dot"></span>Roam</div>
+  <div data-i18n="foot.copy">© 2026 Roam · Gezginler için sevgiyle yapıldı.</div>
+</footer>
+
+<script>
+/* ---------- i18n ---------- */
+const I18N={
+  tr:{
+    "nav.dl":"Uygulamayı İndir","hero.eyebrow":"Gezdiğin Her Yer",
+    "hero.title":'Dünyanı <em>haritala.</em>',
+    "hero.sub":"Gittiğin ülkeleri işaretle, gezegenin yüzde kaçını keşfettiğini gör. Aşağı kaydır, dünya seninle dönsün.",
+    "hero.world":"Dünya Keşfedildi","hero.scroll":"Kaydır",
+    "strip.s1":"Takip edebileceğin ülke","strip.s2":"Kıta ve bölge","strip.s3":"Bölgesel alt liste","strip.s4":"Paylaşılacak anı",
+    "feat.tag":"Neler Yapabilirsin","feat.title":"Bir dokunuşla işaretle, ömür boyu sakla.",
+    "feat.sub":"Roam, seyahat geçmişini güzel bir haritaya dönüştürür. Karmaşık ayar yok — sadece nereye gittiğini seç.",
+    "feat.c1t":"Renkli dünya haritası","feat.c1p":"Ziyaret ettiğin her ülke haritada anında renklenir. İlerlemeni tek bakışta gör.",
+    "feat.c2t":"Kıta yüzdeleri","feat.c2p":"Avrupa'nın %80'i, Asya'nın %20'si... Her kıtadaki ilerlemeni ayrı ayrı takip et.",
+    "feat.c3t":"Tek dokunuşla paylaş","feat.c3p":"Haritanı görsel olarak dışa aktar, arkadaşlarınla yarış, anılarını paylaş.",
+    "cont.tag":"Kıta Kıta","cont.title":"Her bölgede ne kadar ilerledin?",
+    "cont.sub":"Roam ilerlemeni kıtalara böler, böylece bir sonraki rotanı planlamak çok kolaydır.",
+    "cont.eu":"Avrupa","cont.as":"Asya","cont.na":"K. Amerika","cont.af":"Afrika","cont.oc":"Okyanusya",
+    "cta.title":"Haritanı doldurmaya başla.","cta.sub":"Ücretsiz indir, ilk ülkeni işaretle. Gerisi kendiliğinden gelir.",
+    "cta.tag":"Yolculuğa Başla",
+    "cta.ap1":"İndir","cta.gp1":"Bul","foot.copy":"© 2026 Roam · Gezginler için sevgiyle yapıldı."
+  },
+  en:{
+    "nav.dl":"Download App","hero.eyebrow":"Everywhere You Go",
+    "hero.title":'Map your <em>world.</em>',
+    "hero.sub":"Mark every country you've visited and watch how much of the planet you've explored. Scroll, and the world turns with you.",
+    "hero.world":"World Explored","hero.scroll":"Scroll",
+    "strip.s1":"Countries to track","strip.s2":"Continents & regions","strip.s3":"Regional sub-lists","strip.s4":"Memories to share",
+    "feat.tag":"What You Can Do","feat.title":"Tap once, keep it for life.",
+    "feat.sub":"Roam turns your travel history into a beautiful map. No complex setup — just pick where you've been.",
+    "feat.c1t":"Vivid world map","feat.c1p":"Every country you visit lights up instantly. See your progress at a glance.",
+    "feat.c2t":"Continent percentages","feat.c2p":"80% of Europe, 20% of Asia... track your progress on every continent separately.",
+    "feat.c3t":"Share in one tap","feat.c3p":"Export your map as an image, compete with friends, share your journey.",
+    "cont.tag":"Continent by Continent","cont.title":"How far have you gotten in each region?",
+    "cont.sub":"Roam breaks your progress down by continent, so planning your next route is effortless.",
+    "cont.eu":"Europe","cont.as":"Asia","cont.na":"N. America","cont.af":"Africa","cont.oc":"Oceania",
+    "cta.title":"Start filling your map.","cta.sub":"Download free, mark your first country. The rest takes care of itself.",
+    "cta.tag":"Begin the Journey",
+    "cta.ap1":"Download on","cta.gp1":"Get it on","foot.copy":"© 2026 Roam · Made with love for travelers."
+  }
+};
+function setLang(l){
+  document.documentElement.lang=l;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const v=I18N[l][el.getAttribute('data-i18n')];
+    if(v!=null) el.innerHTML=v;
+  });
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+setLang('tr');
+
+/* ---------- nav shadow ---------- */
+addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>20));
+
+/* ---------- continent bars on view ---------- */
+const bo=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){
+  e.target.querySelectorAll('.fill').forEach(f=>f.style.width=f.dataset.w+'%');bo.unobserve(e.target);}})},{threshold:.4});
+bo.observe(document.getElementById('bars'));
+
+/* ---------- SCROLL-DRIVEN GLOBE ---------- */
+const cv=document.getElementById('globe'),ctx=cv.getContext('2d');
+let W,H,DPR;
+function resize(){DPR=Math.min(devicePixelRatio||1,2);W=cv.clientWidth;H=cv.clientHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
+addEventListener('resize',resize);
+
+/* land points: lat/lon scattered across continents (approx silhouettes) */
+const LAND=[];
+function blob(latMin,latMax,lonMin,lonMax,n){for(let i=0;i<n;i++){LAND.push({la:latMin+Math.random()*(latMax-latMin),lo:lonMin+Math.random()*(lonMax-lonMin),c:0});}}
+// Europe
+blob(36,60,-9,40,140);blob(58,70,8,30,40);
+// Africa
+blob(-34,34,-16,50,260);
+// Asia
+blob(8,70,40,140,420);blob(0,20,95,140,90);
+// India
+blob(8,30,70,88,70);
+// Oceania
+blob(-43,-12,113,154,90);
+// North America
+blob(15,68,-125,-60,300);
+// South America
+blob(-54,12,-80,-35,200);
+// Greenland
+blob(60,82,-50,-20,40);
+
+// assign each land point a "fill order" 0..1 grouped so countries fill region by region
+LAND.forEach(p=>p.ord=Math.random());
+LAND.sort((a,b)=>a.ord-b.ord);
+LAND.forEach((p,i)=>p.fillAt=i/LAND.length);
+
+function project(la,lo,rot,R,cx,cy){
+  const lat=la*Math.PI/180, lon=(lo+rot)*Math.PI/180;
+  const x=Math.cos(lat)*Math.sin(lon);
+  const y=Math.sin(lat);
+  const z=Math.cos(lat)*Math.cos(lon);
+  return {x:cx+x*R, y:cy-y*R, z};
+}
+
+let prog=0; // 0..1 scroll progress through stage
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const cx=W*0.5, cy=H*0.52, R=Math.min(W,H)*0.34;
+  const rot=prog*300 - 30;
+
+  // atmosphere glow halo
+  const halo=ctx.createRadialGradient(cx,cy,R*0.85,cx,cy,R*1.45);
+  halo.addColorStop(0,'rgba(54,208,232,.32)');
+  halo.addColorStop(.5,'rgba(43,140,255,.12)');
+  halo.addColorStop(1,'rgba(43,140,255,0)');
+  ctx.beginPath();ctx.arc(cx,cy,R*1.45,0,7);ctx.fillStyle=halo;ctx.fill();
+
+  // ocean sphere (deep, with lit edge)
+  const g=ctx.createRadialGradient(cx-R*0.35,cy-R*0.4,R*0.1,cx,cy,R*1.05);
+  g.addColorStop(0,'#1b4e7a');g.addColorStop(.55,'#0e2c4d');g.addColorStop(1,'#071a30');
+  ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.fillStyle=g;ctx.fill();
+
+  // rim light
+  ctx.lineWidth=1.5;
+  const rim=ctx.createLinearGradient(cx-R,cy-R,cx+R,cy+R);
+  rim.addColorStop(0,'rgba(54,208,232,.9)');rim.addColorStop(1,'rgba(43,140,255,.2)');
+  ctx.strokeStyle=rim;ctx.stroke();
+
+  // graticule
+  ctx.strokeStyle='rgba(120,190,230,.16)';ctx.lineWidth=1;
+  for(let la=-60;la<=60;la+=30){ctx.beginPath();let s=false;
+    for(let lo=-180;lo<=180;lo+=6){const p=project(la,lo,rot,R,cx,cy);if(p.z>0){if(!s){ctx.moveTo(p.x,p.y);s=true;}else ctx.lineTo(p.x,p.y);}else s=false;}ctx.stroke();}
+  for(let lo=-180;lo<180;lo+=30){ctx.beginPath();let s=false;
+    for(let la=-90;la<=90;la+=5){const p=project(la,lo,rot,R,cx,cy);if(p.z>0){if(!s){ctx.moveTo(p.x,p.y);s=true;}else ctx.lineTo(p.x,p.y);}else s=false;}ctx.stroke();}
+
+  // land points
+  const filled = prog;
+  for(const p of LAND){
+    const pr=project(p.la,p.lo,rot,R,cx,cy);
+    if(pr.z<=0) continue;
+    const visited = p.fillAt < filled;
+    const sz = 2.3 + pr.z*1.7;
+    ctx.beginPath();ctx.arc(pr.x,pr.y,sz,0,7);
+    if(visited){
+      // aqua->gold glow for visited
+      ctx.shadowBlur=10;ctx.shadowColor='rgba(54,208,232,.8)';
+      const mix=p.fillAt/Math.max(filled,.001);
+      ctx.fillStyle = mix>0.6
+        ? 'rgba(232,192,116,'+(0.7+pr.z*0.3)+')'
+        : 'rgba(54,208,232,'+(0.7+pr.z*0.3)+')';
+    }else{
+      ctx.shadowBlur=0;
+      ctx.fillStyle='rgba(150,185,220,'+(0.16+pr.z*0.16)+')';
+    }
+    ctx.fill();
+  }
+  ctx.shadowBlur=0;
+  document.getElementById('pctNum').textContent=Math.round(filled*100);
+}
+
+function onScroll(){
+  const st=document.getElementById('stage');
+  const r=st.getBoundingClientRect();
+  const total=st.offsetHeight-innerHeight;
+  prog=Math.min(1,Math.max(0,-r.top/total));
+  draw();
+}
+resize();onScroll();
+addEventListener('scroll',onScroll,{passive:true});
+// gentle idle render for crispness on load
+draw();
+</script>
+</body>
+</html>
